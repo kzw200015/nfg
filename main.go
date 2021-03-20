@@ -8,6 +8,7 @@ import (
 	"os/exec"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/robfig/cron/v3"
 )
 
 const (
@@ -108,6 +109,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	//添加定时任务
+	c := cron.New()
+	_, err = c.AddFunc("r@every 1m", func() {
+		do(*config)
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	c.Start()
+
 	log.Println("waiting")
 	<-done
 }
