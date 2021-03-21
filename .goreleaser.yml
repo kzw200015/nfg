@@ -1,5 +1,4 @@
 builds:
-  - main: ./main.go
-    binary: nfg
+  - binary: nfg
     goos:
       - linux
