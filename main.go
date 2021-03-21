@@ -112,7 +112,7 @@ func main() {
 
 	//添加定时任务
 	c := cron.New()
-	_, err = c.AddFunc("r@every 1m", func() {
+	_, err = c.AddFunc("@every 1m", func() {
 		do(*config)
 	})
 	if err != nil {
