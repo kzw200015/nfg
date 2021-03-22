@@ -3,8 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -21,6 +24,29 @@ add chain nat POSTROUTING { type nat hook postrouting priority 100 ; }
 add rule ip nat POSTROUTING ip daddr %v %v dport %v counter snat to %v`
 )
 
+type Rule struct {
+	LocalPort  string
+	RemotePort string
+	RemoteAddr string
+	LocalAddr  string
+}
+
+func saveNFTFile(rules []Rule) {
+	log.Println("生成转发规则")
+	err := ioutil.WriteFile(tempNFTPath, []byte(generateNFT(rules)), 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func executeNFT() {
+	log.Println("执行规则")
+	cmd := exec.Command("nft", "-f", tempNFTPath)
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
 func parseConfig(filePath string) ([]Rule, error) {
 	var rules []Rule
 
@@ -95,5 +121,6 @@ func generateNFT(rules []Rule) string {
 		nft.WriteString(fmt.Sprintf(nftFormat, "udp", rule.LocalPort, rule.RemoteAddr, rule.RemotePort, rule.RemoteAddr, "udp", rule.RemotePort, rule.LocalAddr))
 		nft.WriteString("\n")
 	}
+
 	return nft.String()
 }
