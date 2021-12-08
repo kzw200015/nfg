@@ -29,9 +29,9 @@ func SaveToFile(rules []config.Rule, fileName string) error {
 	}
 	defer f.Close()
 
-	io.WriteString(f, Generate(rules))
+	_, err = io.WriteString(f, Generate(rules))
 
-	return nil
+	return err
 }
 
 func Generate(rules []config.Rule) string {
