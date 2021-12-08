@@ -74,7 +74,7 @@ func (w *Watcher) watchFs() <-chan error {
 						errChan <- err
 					}
 				}
-				if event.Op == fsnotify.Write {
+				if event.Op == fsnotify.Write || event.Op == fsnotify.Chmod {
 					log.Logger.Infoln("检测到配置文件更改")
 					go w.do(errChan)
 				}

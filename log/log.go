@@ -22,7 +22,7 @@ type defaultFormatter struct{}
 func (*defaultFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	var b bytes.Buffer
 	t := entry.Time.Format("2006-01-02 15:04:05")
-	s := fmt.Sprintf("%s [%s] %s %s\n", t, entry.Level, entry.Caller.Function, entry.Message)
+	s := fmt.Sprintf("%s [%s] %s\n", t, entry.Level, entry.Message)
 	b.WriteString(s)
 	return b.Bytes(), nil
 }
