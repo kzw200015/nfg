@@ -14,9 +14,9 @@ import (
 
 type Rule struct {
 	SrcAddr  string `yaml:"srcAddr,omitempty" validate:"ip|fqdn"`
-	SrcPort  int    `yaml:"srcPort,omitempty" validate:"min=1,max=65535"`
+	SrcPort  string `yaml:"srcPort,omitempty" validate:"required"`
 	DstAddr  string `yaml:"dstAddr,omitempty" validate:"ip|fqdn"`
-	DstPort  int    `yaml:"dstPort,omitempty" validate:"min=1,max=65535"`
+	DstPort  string `yaml:"dstPort,omitempty" validate:"required"`
 	Protocol string `yaml:"protocol,omitempty" validate:"oneof=tcp udp both"`
 }
 
