@@ -68,15 +68,15 @@ func (w *Watcher) watchFs() <-chan error {
 		for {
 			select {
 			case event := <-watcher.Events:
-				if (event.Op == fsnotify.Write) || (event.Op == fsnotify.Chmod) {
-					go w.do(errChan)
-				}
-
 				if event.Op == fsnotify.Remove {
 					err = watcher.Add(w.src)
 					if err != nil {
 						errChan <- err
 					}
+				}
+				if event.Op == fsnotify.Write {
+					log.Logger.Infoln("检测到配置文件更改")
+					go w.do(errChan)
 				}
 			case err := <-watcher.Errors:
 				if err != nil {
@@ -91,13 +91,16 @@ func (w *Watcher) watchFs() <-chan error {
 
 func (w *Watcher) do(errChan chan<- error) {
 	w.mu.Lock()
+	log.Logger.Infoln("读取配置文件")
 	c, err := config.NewLocalConfig(w.src)
 	if err != nil {
 		errChan <- err
 	}
+	log.Logger.Infoln("生成转发规则")
 	if err = SaveToFile(c.Rules, w.temp); err != nil {
 		errChan <- err
 	}
+	log.Logger.Infoln("应用转发规则")
 	if err = Apply(w.temp); err != nil {
 		errChan <- err
 	}

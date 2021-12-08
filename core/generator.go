@@ -22,6 +22,18 @@ add rule ip nat POSTROUTING ip daddr %v %v dport %v counter snat to %v
 `
 )
 
+func SaveToFile(rules []config.Rule, fileName string) error {
+	f, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	io.WriteString(f, Generate(rules))
+
+	return nil
+}
+
 func Generate(rules []config.Rule) string {
 	var builder strings.Builder
 	builder.WriteString(rulePrefix)
@@ -47,16 +59,4 @@ func genTcpRule(rule config.Rule) string {
 
 func genUdpRule(rule config.Rule) string {
 	return fmt.Sprintf(ruleFormat, "udp", rule.SrcPort, rule.DstAddr, rule.DstPort, rule.DstAddr, "udp", rule.DstPort, rule.SrcAddr)
-}
-
-func SaveToFile(rules []config.Rule, fileName string) error {
-	f, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	io.WriteString(f, Generate(rules))
-
-	return nil
 }
